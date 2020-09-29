@@ -22,14 +22,15 @@ end
 
 module CreateJob
   class << self
-    def call
-      id = SecureRandom.uuid
+    def call(params)
+      params[:id] = SecureRandom.uuid
+      slug = params[:title].downcase.strip.gsub(/\W/, '-').gsub(/\s+/, '-')
 
       github.create_contents(
         BUILTINRUBY_REPOSITORY,
-        "path/to/#{Date.today}-#{id}file.md",
+        "path/to/#{Date.today}-#{slug}.md",
         "[event] created new job `#{id} file`",
-        'The File Content',
+        Templates::Job.render(params),
         branch: BUILTINRUBY_BRANCH
       )
 
@@ -43,6 +44,62 @@ get '/' do
 end
 
 post '/jobs' do
-  result = CreateJob.call
+  stash = {
+    posted_at: Date.today,
+    title: params[:title],
+    company: params[:company],
+    role: params[:role],
+    level: params[:level],
+    location: params[:location],
+    employment_term: params[:employment_term],
+    pay_rate: params[:pay_rate],
+    website: params[:websile],
+    tags: params[:tags],
+    description: params[:description],
+    requirements: params[:requirements],
+    benefits: params[:benefits],
+    how_to_apply: params[:how_to_apply],
+  }
+
+  result = CreateJob.call(stash)
   json id: result[:id], message: 'JOB_CREATED'
+end
+
+module Templates
+  module Job
+    class << self
+      def render(params = {})
+        %[
+---
+_id: #{params[:id]}
+layout: jobs
+posted_at: #{params[:posted_at]}
+title: #{params[:title]}
+company: #{params[:company]}
+role: #{params[:role]}
+level: #{params[:level]}
+location: #{params[:location]}
+employment_term: #{params[:employment_term]}
+pay_rate: #{params[:pay_rate]}
+website: #{params[:website]}
+status: searching
+tags:
+  - #{params[:tags].join("\n  - ")}
+---
+
+## Descrição da Vaga
+#{params[:description]}
+
+## Requisitos
+#{params[:requirements]}
+
+## Benefícios
+#{params[:benefits]}
+
+## Como se candidatar?
+#{params[:how_to_apply]}
+        ]
+      end
+    end
+  end
 end
