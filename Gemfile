@@ -1,5 +1,6 @@
-source "https://rubygems.org"
-
+source 'https://rubygems.org'
 
 gem 'sinatra'
-gem "rake", "~> 12.0"
+gem 'sinatra-contrib'
+gem 'octokit', '~> 4.0'
+gem 'rake', '~> 12.0'
