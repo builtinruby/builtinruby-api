@@ -26,7 +26,7 @@ module CreateJob
       id = SecureRandom.uuid
 
       github.create_contents(
-        settings.repository
+        settings.repository,
         "path/to/#{Date.today.to_s}-#{id}file.md",
         "[event] created new job `#{id} file`",
         'The File Content',
