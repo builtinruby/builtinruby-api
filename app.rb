@@ -5,13 +5,15 @@ require 'sinatra/json'
 require 'securerandom'
 
 OCTOKIT_TOKEN = ENV['OCTOKIT_TOKEN']
+BUILTINRUBY_REPOSITORY = ENV['BUILTINRUBY_REPOSITORY']
+BUILTINRUBY_BRANCH = ENV['BUILTINRUBY_BRANCH']
 
 configure do
   enable(:logging)
 
-  set :repository, ENV['BUILTINRUBY_REPOSITORY']
+  set :repository, BUILTINRUBY_REPOSITORY
 
-  set :branch, ENV['BUILTINRUBY_BRANCH']
+  set :branch, BUILTINRUBY_BRANCH
 end
 
 def github
@@ -24,11 +26,11 @@ module CreateJob
       id = SecureRandom.uuid
 
       github.create_contents(
-        settings.repository,
+        BUILTINRUBY_REPOSITORY,
         "path/to/#{Date.today}-#{id}file.md",
         "[event] created new job `#{id} file`",
         'The File Content',
-        branch: settings.branch
+        branch: BUILTINRUBY_BRANCH
       )
 
       { id: id }
