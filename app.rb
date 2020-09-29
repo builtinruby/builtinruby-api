@@ -92,7 +92,8 @@ end
 module Templates
   module Company
     class << self
-      %[---
+      def render(params = {})
+        %[---
 _id: #{params[:id]}
 layout: companies
 posted_at: #{params[:posted_at]}
@@ -108,7 +109,8 @@ linkedin: #{params[:linkedin]}
 ---
 
 #{params[:description]}
-      ]
+        ]
+      end
     end
   end
 
