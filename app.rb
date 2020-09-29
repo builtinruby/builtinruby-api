@@ -22,18 +22,18 @@ end
 
 module CreateJob
   class << self
-    def call(_input)
+    def call
       id = SecureRandom.uuid
 
       github.create_contents(
         settings.repository,
-        "path/to/#{Date.today.to_s}-#{id}file.md",
+        "path/to/#{Date.today}-#{id}file.md",
         "[event] created new job `#{id} file`",
         'The File Content',
         branch: settings.branch
       )
 
-      return { id: id }
+      { id: id }
     end
   end
 end
