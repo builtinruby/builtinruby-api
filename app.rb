@@ -29,7 +29,7 @@ module CreateJob
       github.create_contents(
         BUILTINRUBY_REPOSITORY,
         "path/to/#{Date.today}-#{slug}.md",
-        "[event] created new job `#{id} file`",
+        "[event] created new job `#{params[:id]} file`",
         Templates::Job.render(params),
         branch: BUILTINRUBY_BRANCH
       )
