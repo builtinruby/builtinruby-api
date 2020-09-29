@@ -20,21 +20,48 @@ def github
   Octokit::Client.new(access_token: OCTOKIT_TOKEN)
 end
 
-module CreateJob
-  class << self
-    def call(params)
-      params[:id] = SecureRandom.uuid
-      slug = params[:title].downcase.strip.gsub(/\W/, '-').gsub(/\s+/, '-')
+module UseCases
+  module CreateCompany
+    class << self
+      def call(params)
+        params[:id] = SecureRandom.uuid
+        params[:posted_at] = Date.today
 
-      github.create_contents(
-        BUILTINRUBY_REPOSITORY,
-        "path/to/#{Date.today}-#{slug}.md",
-        "[event] created new job `#{params[:id]} file`",
-        Templates::Job.render(params),
-        branch: BUILTINRUBY_BRANCH
-      )
+        slug = params[:title].downcase.strip.gsub(/\W/, '-').gsub(/\s+/, '-')
+        content = Templates::Company.render(params)
 
-      { id: id }
+        github.create_contents(
+          BUILTINRUBY_REPOSITORY,
+          "companies/#{slug}.md",
+          "[event] created new company `#{params[:id]} #{slug}`",
+          content,
+          branch: BUILTINRUBY_BRANCH
+        )
+
+        { id: id }
+      end
+    end
+  end
+
+  module CreateJob
+    class << self
+      def call(params)
+        params[:id] = SecureRandom.uuid
+        params[:posted_at] = Date.today
+
+        slug = params[:title].downcase.strip.gsub(/\W/, '-').gsub(/\s+/, '-')
+        content = Templates::Job.render(params)
+
+        github.create_contents(
+          BUILTINRUBY_REPOSITORY,
+          "jobs/#{params[:posted_at]}-#{slug}.md",
+          "[event] created new job `#{params[:id]} #{slug}`",
+          content,
+          branch: BUILTINRUBY_BRANCH
+        )
+
+        { id: id }
+      end
     end
   end
 end
@@ -44,33 +71,51 @@ get '/' do
 end
 
 post '/jobs' do
-  stash = {
-    posted_at: Date.today,
-    title: params[:title],
-    company: params[:company],
-    role: params[:role],
-    level: params[:level],
-    location: params[:location],
-    employment_term: params[:employment_term],
-    pay_rate: params[:pay_rate],
-    website: params[:websile],
-    tags: params[:tags],
-    description: params[:description],
-    requirements: params[:requirements],
-    benefits: params[:benefits],
-    how_to_apply: params[:how_to_apply],
-  }
+  job_params = params.slice(
+    :title, :company, :role, :level, :location, :employment_term, :pay_rate, :website, :tags, :description,
+    :requirements, :benefits, :how_to_apply
+  )
 
-  result = CreateJob.call(stash)
+  result = UseCases::CreateJob.call(job_params)
   json id: result[:id], message: 'JOB_CREATED'
 end
 
+post '/companies' do
+  company_params = params.slice(
+    :title, :category, :founded_at, :logo, :location, :website, :blog, :github, :linkedin, :description
+  )
+
+  result = UseCases::CreateCompany.call(company_params)
+  json id: result[:id], message: 'COMPANY_CREATED'
+end
+
 module Templates
+  module Company
+    class << self
+      %[---
+_id: #{params[:id]}
+layout: companies
+posted_at: #{params[:posted_at]}
+title: #{params[:title]}
+category: #{params[:category]}
+founded_at: #{params[:founded_at]}
+logo: #{params[:logo]}
+location: #{params[:location]}
+website: #{params[:website]}
+blog: #{params[:blog]}
+github: #{params[:github]}
+linkedin: #{params[:linkedin]}
+---
+
+#{params[:description]}
+      ]
+    end
+  end
+
   module Job
     class << self
       def render(params = {})
-        %[
----
+        %[---
 _id: #{params[:id]}
 layout: jobs
 posted_at: #{params[:posted_at]}
