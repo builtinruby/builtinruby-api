@@ -14,10 +14,8 @@ configure do
   set :branch, ENV['BUILTINRUBY_BRANCH']
 end
 
-helpers do
-  def github
-    @github ||= Octokit::Client.new(access_token: OCTOKIT_TOKEN)
-  end
+def github
+  Octokit::Client.new(access_token: OCTOKIT_TOKEN)
 end
 
 module CreateJob
