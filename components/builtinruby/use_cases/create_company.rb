@@ -16,7 +16,6 @@ module BuiltinRuby
 
           params[:id] = SecureRandom.uuid
           params[:posted_at] = Date.today
-          params[:title] = params[:company]
 
           slug = (params[:title] || '').downcase.strip.gsub(/\W/, '-').gsub(/\s+/, '-')
           content = BuiltinRuby::Templates::CompanyTemplate.render(params)
