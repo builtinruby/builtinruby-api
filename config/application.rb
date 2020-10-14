@@ -23,6 +23,11 @@ unless Rails.env.production?
   Dotenv::Railtie.load
 end
 
+# sentry.io
+Raven.configure do |config|
+  config.dsn = ENV['SENTRY_DSN']
+end
+
 module Builtinruby
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -37,5 +42,7 @@ module Builtinruby
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    config.filter_parameters << :password
   end
 end
