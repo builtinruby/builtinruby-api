@@ -7,6 +7,7 @@ gem 'rails', '~> 6.0.3', '>= 6.0.3.3'
 gem 'puma', '~> 4.1'
 gem 'octokit', '~> 4.0'
 gem 'rack-cors'
+gem 'sentry-raven'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -15,10 +16,6 @@ end
 
 group :development do
   gem 'listen', '~> 3.2'
-end
-
-group :production do
-  gem 'sentry-raven'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
