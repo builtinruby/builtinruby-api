@@ -12,6 +12,7 @@ gem 'sentry-raven'
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'dotenv-rails', '~> 2.1', '>= 2.1.1'
+  gem 'mocha'
 end
 
 group :development do
