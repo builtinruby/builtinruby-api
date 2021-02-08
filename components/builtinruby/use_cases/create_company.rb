@@ -22,7 +22,7 @@ module BuiltinRuby
 
           github.create_contents(
             BUILTINRUBY_REPOSITORY,
-            "companies/#{slug}.md",
+            "_companies/#{slug}.md",
             "[event] created new company `#{params[:id]} #{slug}`",
             content,
             branch: BUILTINRUBY_BRANCH
