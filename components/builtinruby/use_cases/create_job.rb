@@ -23,7 +23,7 @@ module BuiltinRuby
 
           github.create_contents(
             BUILTINRUBY_REPOSITORY,
-            "jobs/#{params[:posted_at]}-#{slug}.md",
+            "_jobs/#{params[:posted_at]}-#{slug}.md",
             "[event] created new job `#{params[:id]} #{slug}`",
             content,
             branch: BUILTINRUBY_BRANCH
